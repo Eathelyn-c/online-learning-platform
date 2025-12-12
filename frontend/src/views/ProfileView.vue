@@ -2,96 +2,96 @@
   <DashboardLayout>
     <div class="profile-container">
       <h1 class="page-title">个人资料</h1>
-      
+
       <div class="profile-content">
         <!-- 用户信息表单 -->
         <div class="profile-section">
           <h2>基本信息</h2>
-          <form @submit.prevent="updateUserInfo" class="profile-form">
+          <form @submit.prevent="updateProfile" class="profile-form">
             <div class="form-group">
               <label for="username">用户名</label>
-              <input 
-                id="username" 
-                v-model="userInfo.username" 
-                type="text" 
-                disabled 
+              <input
+                id="username"
+                v-model="userInfo.username"
+                type="text"
+                disabled
                 class="form-control"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="email">邮箱</label>
-              <input 
-                id="email" 
-                v-model="userInfo.email" 
-                type="email" 
-                disabled 
+              <input
+                id="email"
+                v-model="userInfo.email"
+                type="email"
+                disabled
                 class="form-control"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="nickname">昵称</label>
-              <input 
-                id="nickname" 
-                v-model="form.nickname" 
-                type="text" 
+              <input
+                id="nickname"
+                v-model="form.nickname"
+                type="text"
                 class="form-control"
                 placeholder="请输入昵称"
               />
             </div>
-            
+
             <div class="form-group">
               <label for="phone">手机号</label>
-              <input 
-                id="phone" 
-                v-model="form.phone" 
-                type="tel" 
+              <input
+                id="phone"
+                v-model="form.phone"
+                type="tel"
                 class="form-control"
                 placeholder="请输入手机号"
               />
             </div>
-            
+
             <div class="form-group">
               <label>性别</label>
               <div class="radio-group">
                 <label class="radio-label">
-                  <input 
-                    v-model="form.gender" 
-                    type="radio" 
-                    :value="1" 
+                  <input
+                    v-model="form.gender"
+                    type="radio"
+                    :value="1"
                     class="radio-input"
                   /> 男
                 </label>
                 <label class="radio-label">
-                  <input 
-                    v-model="form.gender" 
-                    type="radio" 
-                    :value="2" 
+                  <input
+                    v-model="form.gender"
+                    type="radio"
+                    :value="2"
                     class="radio-input"
                   /> 女
                 </label>
                 <label class="radio-label">
-                  <input 
-                    v-model="form.gender" 
-                    type="radio" 
-                    :value="0" 
+                  <input
+                    v-model="form.gender"
+                    type="radio"
+                    :value="0"
                     class="radio-input"
                   /> 保密
                 </label>
               </div>
             </div>
-            
+
             <div class="form-group">
               <label for="birthday">生日</label>
-              <input 
-                id="birthday" 
-                v-model="form.birthday" 
-                type="date" 
+              <input
+                id="birthday"
+                v-model="form.birthday"
+                type="date"
                 class="form-control"
               />
             </div>
-            
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" :disabled="isUpdating">
                 {{ isUpdating ? '更新中...' : '更新信息' }}
@@ -99,47 +99,47 @@
             </div>
           </form>
         </div>
-        
+
         <!-- 修改密码表单 -->
         <div class="profile-section">
           <h2>修改密码</h2>
-          <form @submit.prevent="changePassword" class="password-form">
+          <form @submit.prevent="changePasswordHandler" class="password-form">
             <div class="form-group">
               <label for="oldPassword">原密码</label>
-              <input 
-                id="oldPassword" 
-                v-model="passwordForm.oldPassword" 
-                type="password" 
+              <input
+                id="oldPassword"
+                v-model="passwordForm.oldPassword"
+                type="password"
                 class="form-control"
                 placeholder="请输入原密码"
                 required
               />
             </div>
-            
+
             <div class="form-group">
               <label for="newPassword">新密码</label>
-              <input 
-                id="newPassword" 
-                v-model="passwordForm.newPassword" 
-                type="password" 
+              <input
+                id="newPassword"
+                v-model="passwordForm.newPassword"
+                type="password"
                 class="form-control"
                 placeholder="请输入新密码"
                 required
               />
             </div>
-            
+
             <div class="form-group">
               <label for="confirmPassword">确认新密码</label>
-              <input 
-                id="confirmPassword" 
-                v-model="passwordForm.confirmPassword" 
-                type="password" 
+              <input
+                id="confirmPassword"
+                v-model="passwordForm.confirmPassword"
+                type="password"
                 class="form-control"
                 placeholder="请再次输入新密码"
                 required
               />
             </div>
-            
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" :disabled="isChangingPassword">
                 {{ isChangingPassword ? '提交中...' : '修改密码' }}
@@ -156,8 +156,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
-import { getCurrentUser } from '@/services/authService'
-import axios from 'axios'
+import {changePassword, getCurrentUser, updateUserInfo} from '@/services/authService'
 
 const router = useRouter()
 
@@ -195,7 +194,7 @@ const loadUserInfo = async () => {
   try {
     const userData = await getCurrentUser()
     userInfo.value = userData
-    
+
     // 初始化表单数据
     form.nickname = userData.nickname || ''
     form.phone = userData.phone || ''
@@ -208,24 +207,24 @@ const loadUserInfo = async () => {
 }
 
 // 更新用户信息
-const updateUserInfo = async () => {
+const updateProfile = async () => {
   isUpdating.value = true
   try {
-    // 构造更新数据，只发送有值的字段
+    // 构造更新数据对象
     const updateData: any = {}
     if (form.nickname) updateData.nickname = form.nickname
     if (form.phone) updateData.phone = form.phone
     if (form.gender !== undefined) updateData.gender = form.gender
     if (form.birthday) updateData.birthday = form.birthday
-    
-    const response = await axios.put('/api/auth/user/info', updateData)
-    
-    if (response.data === '更新成功') {
+
+    const response = await updateUserInfo(updateData)
+
+    if (response === '更新成功') {
       alert('用户信息更新成功')
       // 重新加载用户信息
       await loadUserInfo()
     } else {
-      alert('更新失败: ' + response.data)
+      alert('更新失败: ' + response)
     }
   } catch (error: any) {
     console.error('更新用户信息失败:', error)
@@ -236,28 +235,28 @@ const updateUserInfo = async () => {
 }
 
 // 修改密码
-const changePassword = async () => {
+const changePasswordHandler = async () => {
   // 验证密码确认
   if (passwordForm.newPassword !== passwordForm.confirmPassword) {
     alert('新密码和确认密码不一致')
     return
   }
-  
+
   isChangingPassword.value = true
   try {
-    const response = await axios.put('/api/auth/user/password', {
+    const response = await changePassword({
       oldPassword: passwordForm.oldPassword,
       newPassword: passwordForm.newPassword
     })
-    
-    if (response.data === '修改成功') {
+
+    if (response === '修改成功') {
       alert('密码修改成功')
       // 清空密码表单
       passwordForm.oldPassword = ''
       passwordForm.newPassword = ''
       passwordForm.confirmPassword = ''
     } else {
-      alert('修改失败: ' + response.data)
+      alert('修改失败: ' + response)
     }
   } catch (error: any) {
     console.error('修改密码失败:', error)

@@ -3,22 +3,23 @@
     <div class="dashboard-container">
       <div class="welcome-section">
         <h1>欢迎回来，{{ user.nickname || user.username }}！</h1>
+        <p>开始今天的学习之旅吧</p>
       </div>
 
       <div class="stats-card">
         <h2>学习统计</h2>
         <div class="stats-grid">
           <div class="stat-item">
-            <span class="stat-value">0</span>
-            <span class="stat-label">已完成课程</span>
+            <span class="stat-value">5</span>
+            <span class="stat-label">正在进行课程</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">0</span>
+            <span class="stat-value">120</span>
             <span class="stat-label">学习时长(小时)</span>
           </div>
           <div class="stat-item">
-            <span class="stat-value">0</span>
-            <span class="stat-label">获得证书</span>
+            <span class="stat-value">3</span>
+            <span class="stat-label">已完成课程</span>
           </div>
         </div>
       </div>
@@ -46,19 +47,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { getCurrentUser } from '@/services/authService'
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/userStore'
 import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
-const router = useRouter()
-const user = ref({
+const userStore = useUserStore()
+
+const user = userStore.user || {
   id: 0,
   username: '',
   nickname: '',
   email: '',
   avatar: ''
-})
+}
 
 const courses = ref([
   {
@@ -83,16 +84,6 @@ const courses = ref([
     progress: 10
   }
 ])
-
-onMounted(async () => {
-  try {
-    const userData = await getCurrentUser()
-    user.value = userData
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-    router.push('/login')
-  }
-})
 </script>
 
 <style scoped>
@@ -108,6 +99,11 @@ onMounted(async () => {
   color: #333;
   font-size: 1.8rem;
   margin: 0;
+}
+
+.welcome-section p {
+  color: #666;
+  margin: 5px 0 0 0;
 }
 
 .stats-card {

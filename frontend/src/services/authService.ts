@@ -59,6 +59,18 @@ export const getCurrentUser = async () => {
   return response.data
 }
 
+// 更新用户信息
+export const updateUserInfo = async (userData: any) => {
+  const response = await axios.put('/auth/user/info', userData)
+  return response.data
+}
+
+// 修改密码
+export const changePassword = async (passwordData: { oldPassword: string; newPassword: string }) => {
+  const response = await axios.put('/auth/user/password', passwordData)
+  return response.data
+}
+
 // 检查是否已认证
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token')

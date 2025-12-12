@@ -32,11 +32,23 @@ export const useUserStore = defineStore('user', () => {
     isAuthenticated.value = false
   }
   
+  // 获取用户角色
+  const getUserRoles = () => {
+    return user.value?.roles || []
+  }
+  
+  // 检查是否有特定角色
+  const hasRole = (role: string) => {
+    return user.value?.roles?.includes(role) || false
+  }
+  
   return { 
     user, 
     isAuthenticated, 
     fetchCurrentUser, 
     setUser, 
-    clearUser 
+    clearUser,
+    getUserRoles,
+    hasRole
   }
 })

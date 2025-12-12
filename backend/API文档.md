@@ -165,6 +165,81 @@ Authorization: Bearer {token}
 }
 ```
 
+### 2.7 获取用户列表（管理员）
+#### 接口地址
+`GET /api/admin/users`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| keyword | string | 否 | 搜索关键词 |
+| status | integer | 否 | 用户状态 |
+| page | integer | 否 | 页码，默认1 |
+| size | integer | 否 | 每页数量，默认10 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "username": "student1",
+        "email": "student1@example.com",
+        "nickname": "学生1号",
+        "avatar": "https://example.com/avatar.jpg",
+        "status": 1,
+        "roles": ["STUDENT"],
+        "createdAt": "2023-01-01 12:00:00"
+      }
+    ],
+    "total": 100,
+    "current": 1,
+    "pages": 10
+  }
+}
+```
+
+### 2.8 更新用户状态（管理员）
+#### 接口地址
+`PUT /api/admin/users/{id}/status`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 用户ID |
+| status | integer | 是 | 用户状态(0:禁用,1:启用) |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 2.9 分配用户角色（管理员）
+#### 接口地址
+`POST /api/admin/users/{id}/roles`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 用户ID |
+| roleIds | array | 是 | 角色ID数组 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "分配成功",
+  "data": null
+}
+```
+
 ## 3. 课程管理模块
 
 ### 3.1 获取课程列表
@@ -324,6 +399,110 @@ Authorization: Bearer {token}
 }
 ```
 
+### 3.5 更新课程（讲师）
+#### 接口地址
+`PUT /api/instructor/courses/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 课程ID |
+| title | string | 否 | 课程标题 |
+| description | string | 否 | 课程描述 |
+| coverImage | string | 否 | 封面图片URL |
+| categoryId | integer | 否 | 分类ID |
+| price | number | 否 | 价格 |
+| originPrice | number | 否 | 原价 |
+| level | integer | 否 | 难度等级 |
+| chapters | array | 否 | 章节信息 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 3.6 删除课程（讲师）
+#### 接口地址
+`DELETE /api/instructor/courses/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 课程ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+### 3.7 课程评价列表
+#### 接口地址
+`GET /api/courses/{id}/reviews`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 课程ID |
+| page | integer | 否 | 页码，默认1 |
+| size | integer | 否 | 每页数量，默认10 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "content": "课程内容很丰富，讲解清晰",
+        "rating": 5,
+        "user": {
+          "id": 1,
+          "username": "student1",
+          "nickname": "学生1号",
+          "avatar": "https://example.com/avatar.jpg"
+        },
+        "createdAt": "2023-01-01 12:00:00"
+      }
+    ],
+    "total": 10,
+    "current": 1,
+    "pages": 2
+  }
+}
+```
+
+### 3.8 提交课程评价
+#### 接口地址
+`POST /api/courses/{id}/reviews`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 课程ID |
+| content | string | 是 | 评价内容 |
+| rating | integer | 是 | 评分(1-5) |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "评价成功",
+  "data": {
+    "id": 1
+  }
+}
+```
+
 ## 4. 学习进度模块
 
 ### 4.1 获取用户课程学习进度
@@ -475,6 +654,42 @@ Authorization: Bearer {token}
   "code": 200,
   "message": "删除成功",
   "data": null
+}
+```
+
+### 4.7 获取我的学习记录
+#### 接口地址
+`GET /api/learning/records`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| page | integer | 否 | 页码，默认1 |
+| size | integer | 否 | 每页数量，默认10 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "course": {
+          "id": 1,
+          "title": "Java基础教程",
+          "coverImage": "https://example.com/course1.jpg"
+        },
+        "progress": 25.50,
+        "lastAccessTime": "2023-01-01 12:00:00",
+        "status": 0
+      }
+    ],
+    "total": 5,
+    "current": 1,
+    "pages": 1
+  }
 }
 ```
 
@@ -698,6 +913,183 @@ Authorization: Bearer {token}
 }
 ```
 
+### 5.7 创建题目（教师）
+#### 接口地址
+`POST /api/instructor/questions`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| categoryId | integer | 是 | 分类ID |
+| type | integer | 是 | 题目类型 |
+| content | string | 是 | 题目内容 |
+| options | string | 否 | 选项（JSON格式） |
+| answer | string | 是 | 参考答案 |
+| analysis | string | 否 | 解析 |
+| difficulty | integer | 否 | 难度等级 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "创建成功",
+  "data": {
+    "id": 1
+  }
+}
+```
+
+### 5.8 更新题目（教师）
+#### 接口地址
+`PUT /api/instructor/questions/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 题目ID |
+| categoryId | integer | 否 | 分类ID |
+| type | integer | 否 | 题目类型 |
+| content | string | 否 | 题目内容 |
+| options | string | 否 | 选项（JSON格式） |
+| answer | string | 否 | 参考答案 |
+| analysis | string | 否 | 解析 |
+| difficulty | integer | 否 | 难度等级 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 5.9 删除题目（教师）
+#### 接口地址
+`DELETE /api/instructor/questions/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 题目ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+### 5.10 创建试卷（教师）
+#### 接口地址
+`POST /api/instructor/exam-papers`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| title | string | 是 | 试卷标题 |
+| description | string | 否 | 试卷说明 |
+| courseId | integer | 否 | 关联课程ID |
+| totalScore | number | 否 | 总分 |
+| passScore | number | 否 | 及格分 |
+| duration | integer | 否 | 考试时长（分钟） |
+| status | integer | 否 | 状态 |
+| questions | array | 是 | 题目列表 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "创建成功",
+  "data": {
+    "id": 1
+  }
+}
+```
+
+### 5.11 更新试卷（教师）
+#### 接口地址
+`PUT /api/instructor/exam-papers/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 试卷ID |
+| title | string | 否 | 试卷标题 |
+| description | string | 否 | 试卷说明 |
+| courseId | integer | 否 | 关联课程ID |
+| totalScore | number | 否 | 总分 |
+| passScore | number | 否 | 及格分 |
+| duration | integer | 否 | 考试时长（分钟） |
+| status | integer | 否 | 状态 |
+| questions | array | 否 | 题目列表 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 5.12 删除试卷（教师）
+#### 接口地址
+`DELETE /api/instructor/exam-papers/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 试卷ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+### 5.13 获取我的考试记录
+#### 接口地址
+`GET /api/exam-records/my`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| page | integer | 否 | 页码，默认1 |
+| size | integer | 否 | 每页数量，默认10 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "paper": {
+          "id": 1,
+          "title": "Java基础测试卷"
+        },
+        "startTime": "2023-01-01 12:00:00",
+        "endTime": "2023-01-01 13:00:00",
+        "score": 85.00,
+        "status": 3,
+        "createdAt": "2023-01-01 12:00:00"
+      }
+    ],
+    "total": 5,
+    "current": 1,
+    "pages": 1
+  }
+}
+```
+
 ## 6. 交流互动模块
 
 ### 6.1 获取社区板块
@@ -904,6 +1296,157 @@ Authorization: Bearer {token}
 }
 ```
 
+### 6.8 更新帖子
+#### 接口地址
+`PUT /api/community/posts/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 帖子ID |
+| title | string | 否 | 帖子标题 |
+| content | string | 否 | 帖子内容 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 6.9 删除帖子
+#### 接口地址
+`DELETE /api/community/posts/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 帖子ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+### 6.10 更新回复
+#### 接口地址
+`PUT /api/community/replies/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 回复ID |
+| content | string | 是 | 回复内容 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 6.11 删除回复
+#### 接口地址
+`DELETE /api/community/replies/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 回复ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+### 6.12 获取私信列表
+#### 接口地址
+`GET /api/community/messages`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| page | integer | 否 | 页码，默认1 |
+| size | integer | 否 | 每页数量，默认10 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "sender": {
+          "id": 2,
+          "username": "teacher1",
+          "nickname": "张老师",
+          "avatar": "https://example.com/avatar.jpg"
+        },
+        "content": "你好，有什么问题吗？",
+        "isRead": 0,
+        "createdAt": "2023-01-01 12:00:00"
+      }
+    ],
+    "total": 10,
+    "current": 1,
+    "pages": 2
+  }
+}
+```
+
+### 6.13 发送私信
+#### 接口地址
+`POST /api/community/messages`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| receiverId | integer | 是 | 接收者ID |
+| content | string | 是 | 私信内容 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "发送成功",
+  "data": {
+    "id": 1
+  }
+}
+```
+
+### 6.14 标记私信已读
+#### 接口地址
+`PUT /api/community/messages/{id}/read`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 私信ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "标记成功",
+  "data": null
+}
+```
+
 ## 7. 资源管理模块
 
 ### 7.1 获取资源分类
@@ -1005,3 +1548,82 @@ Authorization: Bearer {token}
   }
 }
 ```
+
+### 7.5 更新资源（讲师）
+#### 接口地址
+`PUT /api/instructor/resources/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 资源ID |
+| categoryId | integer | 否 | 分类ID |
+| title | string | 否 | 资源标题 |
+| description | string | 否 | 资源描述 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "更新成功",
+  "data": null
+}
+```
+
+### 7.6 删除资源（讲师）
+#### 接口地址
+`DELETE /api/instructor/resources/{id}`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 资源ID |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "删除成功",
+  "data": null
+}
+```
+
+### 7.7 获取课程资源
+#### 接口地址
+`GET /api/courses/{id}/resources`
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| id | integer | 是 | 课程ID |
+| page | integer | 否 | 页码，默认1 |
+| size | integer | 否 | 每页数量，默认10 |
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "records": [
+      {
+        "id": 1,
+        "title": "Java基础教程PDF",
+        "description": "Java基础教程完整版PDF",
+        "fileUrl": "https://example.com/java-basic.pdf",
+        "fileSize": 1024000,
+        "fileType": "pdf",
+        "downloadCount": 100,
+        "uploader": {
+          "id": 2,
+          "username": "teacher1",
+          "nickname": "张老师"
+        },
+        "createdAt": "2023-01-01 12:00:00"
+      }
+    ],
+    "total": 5,
+    "current": 1,
+    "pages": 1
+  }
+}

@@ -21,6 +21,7 @@
           <span class="username">{{ username }}</span>
         </div>
         <div v-show="showUserMenu" class="user-menu">
+          <button @click="handleProfile">个人资料</button>
           <button @click="handleLogout">退出登录</button>
         </div>
       </div>
@@ -33,7 +34,7 @@
       </div>
       <nav class="sidebar-nav">
         <ul>
-          <li v-for="item in menuItems" :key="item.name"
+          <li v-for="item in displayedMenuItems" :key="item.name"
               :class="{ active: isActive(item.path) }"
               @click="navigateTo(item.path)">
             <i class="menu-icon">{{ item.icon }}</i>
@@ -51,15 +52,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 import { logout } from '@/services/authService'
+import { getMenuItemsByRole } from '@/config/menuConfig'
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 
 // 用户信息
-const username = ref('用户')
+const username = computed(() => userStore.user?.nickname || userStore.user?.username || '用户')
 const userAvatar = ref('https://via.placeholder.com/40') // 占位图
 
 // 侧边栏状态
@@ -69,16 +73,16 @@ const showUserMenu = ref(false)
 // 面包屑导航
 const breadcrumbs = ref<string[]>(['首页'])
 
-// 菜单项目
-const menuItems = ref([
-  { name: '仪表板', path: '/dashboard', icon: '📊' },
-  { name: '课程管理', path: '/courses', icon: '📚' },
-  { name: '学生管理', path: '/students', icon: '👨‍🎓' },
-  { name: '教师管理', path: '/teachers', icon: '👩‍🏫' },
-  { name: '统计分析', path: '/analytics', icon: '📈' },
-  { name: '个人资料', path: '/profile', icon: '👤' },
-  { name: '系统设置', path: '/settings', icon: '⚙️' }
-])
+// 根据用户角色计算菜单项
+const displayedMenuItems = computed(() => {
+  if (!userStore.user || !userStore.user.roles || userStore.user.roles.length === 0) {
+    return getMenuItemsByRole('STUDENT')
+  }
+  
+  // 获取用户的主要角色（第一个角色）
+  const primaryRole = userStore.user.roles[0]
+  return getMenuItemsByRole(primaryRole)
+})
 
 // 切换侧边栏
 const toggleSidebar = () => {
@@ -97,13 +101,36 @@ const isActive = (path: string) => {
 
 // 导航到指定路径
 const navigateTo = (path: string) => {
+  // 特殊处理仪表盘路径
+  if (path === '/dashboard') {
+    const primaryRole = userStore.user?.roles?.[0] || 'STUDENT'
+    switch (primaryRole) {
+      case 'TEACHER':
+        router.push('/teacher/dashboard')
+        return
+      case 'ADMIN':
+        router.push('/admin/dashboard')
+        return
+      default:
+        router.push('/student/dashboard')
+        return
+    }
+  }
+  
   router.push(path)
+}
+
+// 个人资料
+const handleProfile = () => {
+  router.push('/profile')
+  showUserMenu.value = false
 }
 
 // 退出登录
 const handleLogout = async () => {
   try {
     await logout()
+    userStore.clearUser()
   } catch (error) {
     console.error('退出登录时发生错误:', error)
   } finally {
@@ -128,26 +155,61 @@ const handleClickOutside = (event: MouseEvent) => {
 const updateBreadcrumbs = () => {
   // 根据当前路由更新面包屑
   switch(route.path) {
+    case '/':
     case '/dashboard':
+    case '/student/dashboard':
       breadcrumbs.value = ['首页', '仪表板']
       break
-    case '/courses':
+    case '/student/courses':
+      breadcrumbs.value = ['首页', '我的课程']
+      break
+    case '/student/learning':
+      breadcrumbs.value = ['首页', '学习进度']
+      break
+    case '/student/exams':
+      breadcrumbs.value = ['首页', '考试中心']
+      break
+    case '/student/community':
+      breadcrumbs.value = ['首页', '社区交流']
+      break
+    case '/teacher/dashboard':
+      breadcrumbs.value = ['首页', '教师仪表板']
+      break
+    case '/teacher/courses':
       breadcrumbs.value = ['首页', '课程管理']
       break
-    case '/students':
+    case '/teacher/questions':
+      breadcrumbs.value = ['首页', '题库管理']
+      break
+    case '/teacher/papers':
+      breadcrumbs.value = ['首页', '试卷管理']
+      break
+    case '/teacher/students':
       breadcrumbs.value = ['首页', '学生管理']
       break
-    case '/teachers':
-      breadcrumbs.value = ['首页', '教师管理']
+    case '/teacher/resources':
+      breadcrumbs.value = ['首页', '资源管理']
+      break
+    case '/admin/dashboard':
+      breadcrumbs.value = ['首页', '管理员仪表板']
+      break
+    case '/admin/users':
+      breadcrumbs.value = ['首页', '用户管理']
+      break
+    case '/admin/courses':
+      breadcrumbs.value = ['首页', '课程管理']
+      break
+    case '/admin/community':
+      breadcrumbs.value = ['首页', '社区管理']
+      break
+    case '/admin/settings':
+      breadcrumbs.value = ['首页', '系统设置']
       break
     case '/analytics':
       breadcrumbs.value = ['首页', '统计分析']
       break
     case '/profile':
       breadcrumbs.value = ['首页', '个人资料']
-      break
-    case '/settings':
-      breadcrumbs.value = ['首页', '系统设置']
       break
     default:
       breadcrumbs.value = ['首页']

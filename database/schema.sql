@@ -353,25 +353,5 @@ CREATE TABLE course_resources (
 -- 初始角色数据
 INSERT INTO roles (name, description) VALUES 
 ('ADMIN', '管理员'),
-('INSTRUCTOR', '讲师'),
+('TEACHER', '讲师'),
 ('STUDENT', '学员');
-
--- 初始权限数据
-INSERT INTO permissions (name, description, url, method) VALUES 
-('USER_MANAGE', '用户管理', '/api/admin/users/**', 'GET,POST,PUT,DELETE'),
-('COURSE_MANAGE', '课程管理', '/api/courses/**', 'GET,POST,PUT,DELETE'),
-('LEARNING_ACCESS', '学习访问', '/api/learning/**', 'GET,POST'),
-('EXAM_ACCESS', '考试访问', '/api/exams/**', 'GET,POST'),
-('COMMUNITY_ACCESS', '社区访问', '/api/community/**', 'GET,POST');
-
--- 管理员角色权限
-INSERT INTO role_permissions (role_id, permission_id) 
-SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'ADMIN';
-
--- 讲师角色权限
-INSERT INTO role_permissions (role_id, permission_id) 
-SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'INSTRUCTOR' AND p.name IN ('COURSE_MANAGE', 'LEARNING_ACCESS', 'EXAM_ACCESS', 'COMMUNITY_ACCESS');
-
--- 学员角色权限
-INSERT INTO role_permissions (role_id, permission_id) 
-SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'STUDENT' AND p.name IN ('LEARNING_ACCESS', 'EXAM_ACCESS', 'COMMUNITY_ACCESS');

@@ -4,6 +4,7 @@
 
 ## 项目结构
 
+
 ```
 .
 ├── backend                 # 后端服务
@@ -12,8 +13,12 @@
 │   │   │   ├── java        # Java源代码
 │   │   │   │   └── com/spm5/olp          # 主包
 │   │   │   │       ├── config            # 配置类
+│   │   │   │       ├── constant           # 常量类
 │   │   │   │       ├── controller         # 控制器层
+│   │   │   │       ├── dto               # 数据传输对象（DTO）
 │   │   │   │       ├── entity            # 实体类
+│   │   │   │       ├── filter            # 过滤器
+│   │   │   │       ├── handler           # 处理类
 │   │   │   │       ├── mapper            # MyBatis Plus映射器
 │   │   │   │       ├── service           # 服务层
 │   │   │   │       │   └── impl          # 服务实现类
@@ -23,14 +28,20 @@
 │   │   │       └── application.yml # 应用配置文件
 │   │   └── test            # 测试代码
 │   └── pom.xml             # Maven配置文件
+├── database                # 数据库脚本
 └── frontend                # 前端应用
     ├── src                 # 前端源代码
     │   ├── assets          # 静态资源
     │   ├── components      # Vue组件
-    │   ├── views           # 页面视图
+    │   ├── layouts         # 布局文件
     │   ├── router          # 路由配置
     │   ├── stores          # 状态管理
-    │   └── types           # TypeScript类型定义
+    │   ├── services        # 服务层
+    │   └── views           # 页面视图
+    │       ├── admin       # 管理员页面
+    │       ├── student     # 学生页面
+    │       ├── teacher     # 教师页面
+    │       └── 公共页面     # 登录、注册等公共页面
     ├── package.json        # npm配置文件
     └── vite.config.ts      # Vite配置文件
 ```
