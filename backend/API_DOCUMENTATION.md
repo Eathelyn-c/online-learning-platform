@@ -149,6 +149,22 @@ Authorization: Bearer {token}
 }
 ```
 
+### 2.6 退出登录
+#### 接口地址
+`POST /api/auth/logout`
+
+#### 请求参数
+无具体参数，但需要在请求头中携带 Authorization token
+
+#### 响应示例
+```json
+{
+  "code": 200,
+  "message": "退出登录成功",
+  "data": null
+}
+```
+
 ## 3. 课程管理模块
 
 ### 3.1 获取课程列表

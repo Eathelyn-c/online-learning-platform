@@ -88,15 +88,15 @@ const popularCourses = [
 
 <style scoped>
 .home-container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2rem;
+  width: 100%;
 }
 
 .hero-section {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-radius: 12px;
   padding: 4rem 2rem;
   text-align: center;
   margin-bottom: 3rem;

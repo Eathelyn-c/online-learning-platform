@@ -3,10 +3,7 @@ package com.spm5.olp.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import com.spm5.olp.constant.SystemConstant;
-import com.spm5.olp.dto.JwtResponseDto;
-import com.spm5.olp.dto.LoginRequestDto;
-import com.spm5.olp.dto.RegisterRequestDto;
-import com.spm5.olp.dto.UserInfoDto;
+import com.spm5.olp.dto.*;
 import com.spm5.olp.entity.User;
 import com.spm5.olp.entity.UserRole;
 import com.spm5.olp.mapper.UserMapper;
@@ -31,10 +28,14 @@ public class AuthServiceImpl implements AuthService {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
+    /**
+     * 用户登录
+     * @param loginRequest 登录请求参数
+     * @return 登录响应参数
+     */
     @Override
-    public JwtResponseDto authenticateUser(LoginRequestDto loginRequest) {
-        System.out.println("Authenticating user: " + loginRequest.getUsername());
+    public JwtResponseDto authenticateUser(LoginRequestDto loginRequest) {System.out.println("Authenticating user: " + loginRequest.getUsername());
         
         // 根据用户名查找用户
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -74,7 +75,12 @@ public class AuthServiceImpl implements AuthService {
         System.out.println("Authentication failed for user: " + loginRequest.getUsername());
         return null;
     }
-    
+
+    /**
+     * 用户注册
+     * @param registerRequest 注册请求参数
+     * @return 是否注册成功
+     */
     @Override
     public boolean registerUser(RegisterRequestDto registerRequest) {
         System.out.println("Registering user: " + registerRequest.getUsername());
@@ -136,7 +142,12 @@ public class AuthServiceImpl implements AuthService {
         System.out.println("Failed to register user");
         return false;
     }
-    
+
+    /**
+     * 获取当前用户的信息
+     * @param userId 用户ID
+     * @return 用户信息
+     */
     @Override
     public UserInfoDto getCurrentUserInfo(Long userId) {
         System.out.println("Getting current user info for user ID: " + userId);
@@ -160,7 +171,12 @@ public class AuthServiceImpl implements AuthService {
         System.out.println("User info retrieved successfully");
         return userInfoDto;
     }
-    
+
+    /**
+     * 获取用户角色
+     * @param userId 用户ID
+     * @return 用户角色列表
+     */
     private List<String> getUserRoles(Long userId) {
         System.out.println("Getting roles for user ID: " + userId);
         List<String> roles = new ArrayList<>();
@@ -180,6 +196,88 @@ public class AuthServiceImpl implements AuthService {
         }
         
         return roles;
+    }
+
+    /**
+     * 更新用户信息
+     * @param userId 用户ID
+     * @param updateUserInfoRequest 更新用户信息请求参数
+     * @return 是否更新成功
+     */
+    @Override
+    public boolean updateUserInfo(Long userId, UpdateUserInfoRequestDto updateUserInfoRequest) {
+        System.out.println("Updating user info for user ID: " + userId);
+        
+        // 查找用户
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            System.out.println("User not found for ID: " + userId);
+            return false;
+        }
+        
+        // 更新用户信息
+        if (updateUserInfoRequest.getNickname() != null) {
+            user.setNickname(updateUserInfoRequest.getNickname());
+        }
+        
+        if (updateUserInfoRequest.getAvatar() != null) {
+            user.setAvatar(updateUserInfoRequest.getAvatar());
+        }
+        
+        if (updateUserInfoRequest.getPhone() != null) {
+            user.setPhone(updateUserInfoRequest.getPhone());
+        }
+        
+        if (updateUserInfoRequest.getGender() != null) {
+            user.setGender(updateUserInfoRequest.getGender());
+        }
+        
+        if (updateUserInfoRequest.getBirthday() != null) {
+            try {
+                user.setBirthday(java.time.LocalDateTime.parse(updateUserInfoRequest.getBirthday()));
+            } catch (Exception e) {
+                System.err.println("Error parsing birthday: " + e.getMessage());
+            }
+        }
+        
+        // 更新数据库
+        int result = userMapper.updateById(user);
+        System.out.println("User info update result: " + result);
+        
+        return result > 0;
+    }
+
+    /**
+     * 修改密码
+     * @param userId 用户ID
+     * @param changePasswordRequest 修改密码请求参数
+     * @return 是否修改成功
+     */
+    @Override
+    public boolean changePassword(Long userId, ChangePasswordRequestDto changePasswordRequest) {
+        System.out.println("Changing password for user ID: " + userId);
+        
+        // 查找用户
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            System.out.println("User not found for ID: " + userId);
+            return false;
+        }
+        
+        // 检查原密码是否正确
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+            System.out.println("Old password is incorrect");
+            return false;
+        }
+        
+        // 更新密码
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        
+        // 更新数据库
+        int result = userMapper.updateById(user);
+        System.out.println("Password change result: " + result);
+        
+        return result > 0;
     }
     
     // 注入RoleMapper

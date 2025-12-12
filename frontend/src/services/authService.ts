@@ -66,6 +66,19 @@ export const isAuthenticated = () => {
 }
 
 // 登出
-export const logout = () => {
-  localStorage.removeItem('token')
+export const logout = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    if (token) {
+      await axios.post('/auth/logout', {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    }
+  } catch (error) {
+    console.error('退出登录时发生错误:', error)
+  } finally {
+    localStorage.removeItem('token')
+  }
 }

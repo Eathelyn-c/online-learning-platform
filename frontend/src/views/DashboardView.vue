@@ -1,11 +1,10 @@
 <template>
-  <div class="dashboard-container">
-    <header class="dashboard-header">
-      <h1>欢迎回来，{{ user.nickname || user.username }}！</h1>
-      <button class="logout-btn" @click="handleLogout">退出登录</button>
-    </header>
+  <DashboardLayout>
+    <div class="dashboard-container">
+      <div class="welcome-section">
+        <h1>欢迎回来，{{ user.nickname || user.username }}！</h1>
+      </div>
 
-    <main class="dashboard-main">
       <div class="stats-card">
         <h2>学习统计</h2>
         <div class="stats-grid">
@@ -42,14 +41,15 @@
           </div>
         </div>
       </div>
-    </main>
-  </div>
+    </div>
+  </DashboardLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getCurrentUser, logout } from '@/services/authService'
+import { getCurrentUser } from '@/services/authService'
+import DashboardLayout from '@/layouts/DashboardLayout.vue'
 
 const router = useRouter()
 const user = ref({
@@ -93,52 +93,21 @@ onMounted(async () => {
     router.push('/login')
   }
 })
-
-const handleLogout = () => {
-  logout()
-  router.push('/login')
-}
 </script>
 
 <style scoped>
 .dashboard-container {
-  min-height: 100vh;
-  background-color: #f5f7fa;
+  padding: 20px;
 }
 
-.dashboard-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1.5rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.welcome-section {
+  margin-bottom: 30px;
 }
 
-.dashboard-header h1 {
-  margin: 0;
+.welcome-section h1 {
+  color: #333;
   font-size: 1.8rem;
-}
-
-.logout-btn {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.logout-btn:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.dashboard-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 0;
 }
 
 .stats-card {

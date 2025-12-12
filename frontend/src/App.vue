@@ -2,8 +2,10 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { isAuthenticated } from '@/services/authService'
+import { useRoute } from 'vue-router'
 
 const isLoggedIn = ref(false)
+const $route = useRoute()
 
 onMounted(() => {
   isLoggedIn.value = isAuthenticated()
@@ -13,43 +15,76 @@ onMounted(() => {
 window.addEventListener('storage', () => {
   isLoggedIn.value = isAuthenticated()
 })
+
+// 判断是否使用仪表板布局
+const useDashboardLayout = () => {
+  // 如果路由有meta信息并且layout为dashboard，则使用仪表板布局
+  if ($route.meta && $route.meta.layout === 'dashboard') {
+    return true;
+  }
+  
+  // 如果用户已登录且不是首页、登录页、注册页，则使用仪表板布局
+  return isLoggedIn.value && 
+         $route.path !== '/' && 
+         $route.path !== '/login' && 
+         $route.path !== '/register';
+}
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <h1>在线学习平台</h1>
-      <nav>
-        <RouterLink to="/">首页</RouterLink>
-        <template v-if="!isLoggedIn">
-          <RouterLink to="/login">登录</RouterLink>
-          <RouterLink to="/register">注册</RouterLink>
-        </template>
-        <template v-else>
-          <RouterLink to="/dashboard">仪表板</RouterLink>
-          <a href="#" @click="() => {
-            localStorage.removeItem('token');
-            isLoggedIn = false;
-            $router.push('/login');
-          }">退出</a>
-        </template>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div class="app-layout">
+    <!-- 使用仪表板布局 -->
+    <template v-if="useDashboardLayout()">
+      <RouterView />
+    </template>
+    
+    <!-- 使用横幅式导航栏布局 -->
+    <template v-else>
+      <header class="banner-header">
+        <div class="header-content">
+          <h1 class="logo">在线学习平台</h1>
+          <nav class="navigation">
+            <RouterLink to="/">首页</RouterLink>
+            <template v-if="!isLoggedIn">
+              <RouterLink to="/login">登录</RouterLink>
+              <RouterLink to="/register">注册</RouterLink>
+            </template>
+            <template v-else>
+              <RouterLink to="/dashboard">仪表板</RouterLink>
+              <a href="#" @click="() => {
+                localStorage.removeItem('token');
+                isLoggedIn = false;
+              }">退出</a>
+            </template>
+          </nav>
+        </div>
+      </header>
+      
+      <!-- 页面内容 -->
+      <main class="main-content">
+        <RouterView />
+      </main>
+    </template>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.banner-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.wrapper {
+.header-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -59,18 +94,24 @@ header {
   height: 70px;
 }
 
-nav {
+.logo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navigation {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-nav a.router-link-exact-active {
+.navigation a.router-link-exact-active {
   color: #ffd700;
   font-weight: bold;
 }
 
-nav a {
+.navigation a {
   display: inline-block;
   padding: 0.5rem 1rem;
   text-decoration: none;
@@ -79,31 +120,30 @@ nav a {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-nav a:hover {
+.navigation a:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: white;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.main-content {
+  flex: 1;
+  width: 100%;
+}
 
-  header .wrapper {
+@media (min-width: 1024px) {
+  .header-content {
     display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+    align-items: center;
+    flex-wrap: nowrap;
     width: 100%;
   }
 
-  nav {
+  .navigation {
     text-align: right;
     margin-left: auto;
     font-size: 16px;
-    padding: 1rem 0;
-    margin-top: 1rem;
+    padding: 0;
+    margin-top: 0;
   }
 }
 </style>

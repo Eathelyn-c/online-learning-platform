@@ -5,11 +5,11 @@
       <form @submit.prevent="handleRegister">
         <div class="form-group">
           <label for="username">用户名:</label>
-          <input
-            id="username"
-            v-model="registerForm.username"
-            type="text"
-            required
+          <input 
+            id="username" 
+            v-model="registerForm.username" 
+            type="text" 
+            required 
             placeholder="请输入用户名"
             :class="{ 'is-invalid': errors.username }"
           />
@@ -17,14 +17,14 @@
             {{ errors.username }}
           </div>
         </div>
-
+        
         <div class="form-group">
           <label for="email">邮箱:</label>
-          <input
-            id="email"
-            v-model="registerForm.email"
-            type="email"
-            required
+          <input 
+            id="email" 
+            v-model="registerForm.email" 
+            type="email" 
+            required 
             placeholder="请输入邮箱"
             :class="{ 'is-invalid': errors.email }"
           />
@@ -32,14 +32,14 @@
             {{ errors.email }}
           </div>
         </div>
-
+        
         <div class="form-group">
           <label for="password">密码:</label>
-          <input
-            id="password"
-            v-model="registerForm.password"
-            type="password"
-            required
+          <input 
+            id="password" 
+            v-model="registerForm.password" 
+            type="password" 
+            required 
             placeholder="请输入密码"
             :class="{ 'is-invalid': errors.password }"
           />
@@ -47,14 +47,14 @@
             {{ errors.password }}
           </div>
         </div>
-
+        
         <div class="form-group">
           <label for="confirmPassword">确认密码:</label>
-          <input
-            id="confirmPassword"
-            v-model="registerForm.confirmPassword"
-            type="password"
-            required
+          <input 
+            id="confirmPassword" 
+            v-model="registerForm.confirmPassword" 
+            type="password" 
+            required 
             placeholder="请再次输入密码"
             :class="{ 'is-invalid': errors.confirmPassword }"
           />
@@ -62,20 +62,20 @@
             {{ errors.confirmPassword }}
           </div>
         </div>
-
+        
         <button type="submit" class="register-button" :disabled="loading">
           {{ loading ? '注册中...' : '注册' }}
         </button>
-
+        
         <div class="form-footer">
           <router-link to="/login">已有账户？立即登录</router-link>
         </div>
       </form>
-
+      
       <div v-if="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
-
+      
       <div v-if="successMessage" class="success-message">
         {{ successMessage }}
       </div>
@@ -113,9 +113,9 @@ const validateForm = () => {
   Object.keys(errors).forEach(key => {
     (errors as any)[key] = ''
   })
-
+  
   let isValid = true
-
+  
   // 验证用户名
   if (!registerForm.username) {
     errors.username = '用户名不能为空'
@@ -124,7 +124,7 @@ const validateForm = () => {
     errors.username = '用户名至少3个字符'
     isValid = false
   }
-
+  
   // 验证邮箱
   if (!registerForm.email) {
     errors.email = '邮箱不能为空'
@@ -133,7 +133,7 @@ const validateForm = () => {
     errors.email = '邮箱格式不正确'
     isValid = false
   }
-
+  
   // 验证密码
   if (!registerForm.password) {
     errors.password = '密码不能为空'
@@ -142,7 +142,7 @@ const validateForm = () => {
     errors.password = '密码至少6个字符'
     isValid = false
   }
-
+  
   // 验证确认密码
   if (!registerForm.confirmPassword) {
     errors.confirmPassword = '请确认密码'
@@ -151,7 +151,7 @@ const validateForm = () => {
     errors.confirmPassword = '两次输入的密码不一致'
     isValid = false
   }
-
+  
   return isValid
 }
 
@@ -159,22 +159,22 @@ const handleRegister = async () => {
   // 重置消息
   errorMessage.value = ''
   successMessage.value = ''
-
+  
   // 表单验证
   if (!validateForm()) {
     return
   }
-
+  
   try {
     loading.value = true
-
+    
     const data = await register(
-      registerForm.username,
-      registerForm.email,
-      registerForm.password,
+      registerForm.username, 
+      registerForm.email, 
+      registerForm.password, 
       registerForm.confirmPassword
     )
-
+    
     if (data === '注册成功') {
       successMessage.value = '注册成功，请登录'
       // 清空表单
@@ -184,11 +184,11 @@ const handleRegister = async () => {
         password: '',
         confirmPassword: ''
       })
-
+      
       // 3秒后跳转到登录页面
       setTimeout(() => {
         router.push('/login')
-      }, 2000)
+      }, 3000)
     } else {
       errorMessage.value = data
     }
@@ -205,8 +205,9 @@ const handleRegister = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: calc(100vh - 70px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
 }
 
 .register-form {
@@ -322,5 +323,15 @@ const handleRegister = async () => {
   padding: 0.5rem;
   background-color: #f0f9ec;
   border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 10px;
+  }
+  
+  .register-form {
+    padding: 1.5rem;
+  }
 }
 </style>

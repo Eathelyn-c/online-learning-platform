@@ -3,6 +3,7 @@ package com.spm5.olp.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.spm5.olp.entity.User;
 import com.spm5.olp.entity.UserRole;
+import com.spm5.olp.mapper.RoleMapper;
 import com.spm5.olp.mapper.UserMapper;
 import com.spm5.olp.mapper.UserRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserRoleMapper userRoleMapper;
     
     @Autowired
-    private com.spm5.olp.mapper.RoleMapper roleMapper;
-    
+    private RoleMapper roleMapper;
+
+    /**
+     * 根据用户名（用户ID）加载用户详情
+     * @param userId 用户ID
+     * @return 用户详情
+     * @throws UsernameNotFoundException 如果用户不存在
+     */
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         User user = userMapper.selectById(Long.valueOf(userId));
