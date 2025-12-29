@@ -1,9 +1,0 @@
-package com.spm5.olp.mapper;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.spm5.olp.entity.UserRole;
-import org.apache.ibatis.annotations.Mapper;
-
-@Mapper
-public interface UserRoleMapper extends BaseMapper<UserRole> {
-}
